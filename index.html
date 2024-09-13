@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEAN MAP</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'DotGothic16', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* ビューポート全体の高さを確保 */
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+         /* ウェルカムメッセージ用の背景画像のアニメーション */
+        #welcome-background {
+            background: url('./pictures/park.jpg') no-repeat center center;
+            background-size: cover;
+            height: 300px;
+            width: calc(100% - 80px);
+            margin: 40px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            opacity: 0;
+            animation: fadeIn 3s ease-out forwards;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* グラデーションフェードインのアニメーション */
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        #clean-map-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            color: #3cd371;
+            text-shadow: -4px -4px 0 #fff, 4px -4px 0 #fff, -4px 4px 0 #fff, 4px 4px 0 #fff;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        #welcome-message {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 32px;
+            color: #ffffff;
+            background-color: #000000;
+            border: 4px solid #ffffff;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0 #000000;
+            text-align: center;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            z-index: 3;
+        }
+
+        /* 右上にgomi.pngを小さく表示 */
+        #gomi-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        /* gomi.pngの下にtabaco.pngを小さく表示 */
+        #tabaco-icon {
+            position: absolute;
+            top: 70px; /* gomi.pngの下に配置 */
+            right: 13px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+/* pin.pngをtabaco.pngの下に表示 */
+#pin-icon {
+            position: absolute;
+            top: 150px; /* tabaco.pngの下に配置 */
+            right: 10px;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        #current-location-btn, #edit-info-btn {
+            padding: 15px 40px;
+            font-size: 24px;
+            background-color: #000000;
+            color: #ffffff;
+            border: 4px solid #ffffff;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000000;
+            font-family: 'DotGothic16', sans-serif;
+        }
+
+        #button-container {
+            position: absolute;
+            bottom: 50px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 3;
+        }
+
+        #current-location-btn:hover, #edit-info-btn:hover {
+            background-color: #000000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #000000;
+            padding: 20px;
+            border: 4px solid #ffffff;
+            text-align: center;
+            color: #ffffff;
+            font-size: 16px;
+            border-radius: 8px;
+            font-family: 'DotGothic16', sans-serif;
+        }
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #000000;
+            color: #ffffff;
+            border: 4px solid #ffffff;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000000;
+            font-family: 'DotGothic16', sans-serif;
+        }
+
+        @media (max-width: 600px) {
+            #welcome-message {
+                font-size: 24px;
+                padding: 20px;
+                height: 50px;
+            }
+
+            #map {
+                border-width: 4px;
+            }
+
+            #current-location-btn, #edit-info-btn {
+                font-size: 16px;
+                padding: 10px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景画像部分 -->
+    <div id="welcome-background">
+        <div id="clean-map-text">CLEAN MAP</div>
+    </div>
+    <div id="welcome-message"></div>
+
+    <!-- ボタンを並べるためのコンテナ -->
+    <div id="button-container" style="display: none;">
+        <button id="current-location-btn">現在地を登録する</button>
+        <button id="edit-info-btn">情報を変更する</button>
+    </div>
+
+    <!-- gomi.pngを右上に表示 -->
+    <img src="./pictures/gomi.png" id="gomi-icon" alt="ゴミ箱を表示する">
+
+    <!-- tabaco.pngをgomi.pngの下に表示 -->
+    <img src="./pictures/tabaco.png" id="tabaco-icon" alt="喫煙所を表示する">
+
+<!-- pin.pngをtabaco.pngの下に表示 -->
+<img src="./pictures/pin.png" id="pin-icon" alt="現在地を表示する">
+
+
+    <!-- ゴミ箱か喫煙所かを選ぶモーダル -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p>何を登録しますか？</p>
+            <button id="register-bin">ゴミ箱を登録</button>
+            <button id="register-smoking-area">喫煙所を登録</button>
+        </div>
+    </div>
+
+    <!-- ゴミ箱用の選択肢モーダル -->
+    <div id="bin-modal" class="modal">
+        <div class="modal-content">
+            <form id="bin-form" class="popup-form">
+                <label for="bin-type">ゴミの種類を選択</label>
+                <select id="bin-type" name="bin-type">
+                    <option value="ペットボトル、缶のみ">ペットボトル、缶のみ</option>
+                    <option value="全て">全て</option>
+                </select>
+
+                <button type="submit">登録</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 喫煙所用の選択肢モーダル -->
+    <div id="smoking-modal" class="modal">
+        <div class="modal-content">
+            <form id="smoking-form" class="popup-form">
+                <label for="crowd">混み具合を選択</label>
+                <select id="crowd" name="crowd">
+                    <option value="空いてる">空いてる</option>
+                    <option value="普通">普通</option>
+                    <option value="混雑">混雑</option>
+                </select>
+
+                <button type="submit">登録</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 情報変更/削除モーダル -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <button id="edit-btn">情報変更</button>
+            <button id="delete-btn">削除</button>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    const welcomeMessageElement = document.getElementById("welcome-message");
+    const cleanMapText = document.getElementById("clean-map-text");
+    const welcomeBackground = document.getElementById('welcome-background');
+    const currentLocationBtn = document.getElementById('current-location-btn');
+    const editInfoBtn = document.getElementById('edit-info-btn');
+    const gomiIcon = document.getElementById('gomi-icon'); // ゴミ箱アイコン
+    const tabacoIcon = document.getElementById('tabaco-icon'); // 喫煙所アイコン
+    const pinIcon = document.getElementById('pin-icon'); // 現在地アイコン
+    let isPinPlaced = false; // ピンが設置されているかを管理するフラグ
+    let isGomiActive = false; // ゴミ箱ピン表示状態を管理するフラグ
+    let isTabacoActive = false; // 喫煙所ピン表示状態を管理するフラグ
+    let charIndex = 0;
+
+    // 言語設定に基づいてテキストを設定
+    const userLang = navigator.language || navigator.userLanguage;
+    let welcomeText, currentLocationText, editInfoText;
+
+    if (userLang.startsWith('ja')) {
+        welcomeText = "クリーンマップへようこそ！";
+        currentLocationText = "現在地を登録する";
+        editInfoText = "情報を変更する";
+    } else {
+        welcomeText = "Welcome to the Clean Map!";
+        currentLocationText = "Add current location";
+        editInfoText = "Change information";
+    }
+
+    currentLocationBtn.textContent = currentLocationText;
+    editInfoBtn.textContent = editInfoText;
+
+    // gomi.pngとtabaco.pngを初期状態では非表示にする
+    gomiIcon.style.display = 'none';
+    tabacoIcon.style.display = 'none';
+    pinIcon.style.display = 'none';
+
+    // 画像表示、CLEAN MAP文字表示、ウェルカムメッセージ表示を順に行う
+    function showTextSequence() {
+        setTimeout(() => {
+            cleanMapText.style.opacity = 1;
+            setTimeout(typeWelcomeMessage, 1000);
+        }, 1000);
+    }
+
+    function typeWelcomeMessage() {
+        if (charIndex < welcomeText.length) {
+            welcomeMessageElement.innerHTML += welcomeText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWelcomeMessage, 100);
+        } else {
+            welcomeMessageElement.style.opacity = 1;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('map').style.display = 'none';
+        welcomeMessageElement.style.opacity = 0;
+        cleanMapText.style.opacity = 0;
+
+        setTimeout(() => {
+            showTextSequence();
+        }, 1000);
+    });
+
+    function transitionToMap() {
+        welcomeBackground.style.display = 'none';
+        welcomeMessageElement.style.display = 'none';
+        document.getElementById('map').style.display = 'block';
+        document.getElementById('button-container').style.display = 'flex';
+        gomiIcon.style.display = 'block'; // マップが表示されたらゴミアイコンを表示
+        tabacoIcon.style.display = 'block'; // マップが表示されたら喫煙所アイコンを表示
+        pinIcon.style.display = 'block'; // 現在地アイコンを表示
+    }
+
+    document.body.addEventListener('click', transitionToMap);
+
+    let selectedType = '';
+    let currentLocation = {};
+    let currentMarker = null;
+    let currentLocationId = null;
+    let markers = []; // マーカーを格納する配列
+
+    const map = L.map('map').setView([35.6895, 139.6917], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    function showModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'flex';
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal(modalId);
+            }
+        });
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'none';
+    }
+
+    document.getElementById('current-location-btn').addEventListener('click', () => showModal('modal'));
+    document.getElementById('edit-info-btn').addEventListener('click', () => showModal('info-modal'));
+
+    document.getElementById('register-bin').addEventListener('click', () => selectLocationType('bin'));
+    document.getElementById('register-smoking-area').addEventListener('click', () => selectLocationType('smoking_area'));
+
+    function selectLocationType(type) {
+        selectedType = type;
+        closeModal('modal');
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                currentLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                if (type === 'bin') {
+                    showModal('bin-modal');
+                } else if (type === 'smoking_area') {
+                    showModal('smoking-modal');
+                }
+            });
+        } else {
+            alert("現在地情報を取得できませんでした。");
+        }
+    }
+
+    document.getElementById('bin-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const binType = document.getElementById('bin-type').value;
+
+        const formData = new FormData();
+        formData.append('lat', currentLocation.lat);
+        formData.append('lng', currentLocation.lng);
+        formData.append('type', selectedType);
+        formData.append('binType', binType);
+
+        fetch('http://localhost:3000/api/add-bin', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                console.log('ゴミ箱が登録されました:', data);
+                closeModal('bin-modal');
+
+                const binIcon = L.icon({
+                    iconUrl: './pictures/gomi.png',
+                    iconSize: [30, 30]
+                });
+
+                const marker = L.marker([currentLocation.lat, currentLocation.lng], { icon: binIcon }).addTo(map)
+                    .bindPopup(`ゴミ箱 - 種類: ${binType}`).openPopup();
+                marker.type = 'bin';
+                markers.push(marker);
+            }).catch(error => {
+                console.error('エラーです:', error);
+            });
+    });
+
+    document.getElementById('smoking-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const crowd = document.getElementById('crowd').value;
+
+        const formData = new FormData();
+        formData.append('lat', currentLocation.lat);
+        formData.append('lng', currentLocation.lng);
+        formData.append('type', selectedType);
+        formData.append('crowd', crowd);
+
+        fetch('http://localhost:3000/api/add-smoking', {
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+            .then(data => {
+                console.log('喫煙所が登録されました:', data);
+                closeModal('smoking-modal');
+
+                const tabacoIcon = L.icon({
+                    iconUrl: './pictures/tabaco.png',
+                    iconSize: [30, 30]
+                });
+
+                const marker = L.marker([currentLocation.lat, currentLocation.lng], { icon: tabacoIcon }).addTo(map)
+                    .bindPopup(`喫煙所 - 混み具合: ${crowd}`).openPopup();
+                marker.type = 'smoking_area';
+                markers.push(marker);
+            }).catch(error => {
+                console.error('エラーです:', error);
+            });
+    });
+
+    function addMarkerWithEditButton(map, id, location, popupText) {
+        const marker = L.marker([location.lat, location.lng]).addTo(map);
+        const popupDiv = document.createElement('div');
+        popupDiv.innerHTML = popupText;
+
+        const editButton = document.createElement('button');
+        editButton.innerHTML = '情報変更';
+        editButton.classList.add('edit-btn');
+        editButton.addEventListener('click', () => {
+            currentLocationId = id;
+            currentMarker = marker;
+            showModal('info-modal');
+        });
+
+        popupDiv.appendChild(editButton);
+        marker.bindPopup(popupDiv);
+        marker.type = location.type;
+        markers.push(marker);
+    }
+
+    document.getElementById('edit-btn').addEventListener('click', () => {
+        closeModal('info-modal');
+        alert('情報を変更する機能をここに追加します。');
+    });
+
+    document.getElementById('delete-btn').addEventListener('click', () => {
+        closeModal('info-modal');
+        if (currentLocationId && currentMarker) {
+            fetch(`http://localhost:3000/api/delete-location/${currentLocationId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(() => {
+                    map.removeLayer(currentMarker);
+                    alert('場所が削除されました。');
+                }).catch(error => {
+                    console.error('エラーです:', error);
+                });
+        }
+    });
+
+    // ゴミ箱ピンのみを表示・元の状態に戻す機能
+    gomiIcon.addEventListener('click', () => {
+        if (!isGomiActive) {
+            markers.forEach(marker => {
+                if (marker.type === 'bin') {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+            isGomiActive = true;
+        } else {
+            markers.forEach(marker => marker.addTo(map)); // 全てのピンを表示
+            isGomiActive = false;
+        }
+    });
+
+    // 喫煙所ピンのみを表示・元の状態に戻す機能
+    tabacoIcon.addEventListener('click', () => {
+        if (!isTabacoActive) {
+            markers.forEach(marker => {
+                if (marker.type === 'smoking_area') {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+            isTabacoActive = true;
+        } else {
+            markers.forEach(marker => marker.addTo(map)); // 全てのピンを表示
+            isTabacoActive = false;
+        }
+    });
+
+    // 現在地を表示・削除する機能
+    pinIcon.addEventListener('click', () => {
+        if (!isPinPlaced) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    currentMarker = L.marker([lat, lng], { icon: L.icon({ iconUrl: './pictures/pin.png', iconSize: [30, 30] }) }).addTo(map);
+                    currentMarker.openPopup();
+                    map.setView([lat, lng], 80); // ピンをマップの中心にし、縮尺を200000分の1に設定
+                    isPinPlaced = true;
+                });
+            } else {
+                alert("現在地情報を取得できませんでした。");
+            }
+        } else {
+            map.removeLayer(currentMarker);
+            isPinPlaced = false;
+        }
+    });
+
+    fetch('http://localhost:3000/api/locations')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(location => {
+                const popupText = location.type === 'bin'
+                    ? `ゴミ箱 - 種類: ${location.binType}`
+                    : `喫煙所 - 混み具合: ${location.crowd}`;
+                addMarkerWithEditButton(map, location.id, location, popupText);
+            });
+        });
+</script>
+
+     
+</body>
+</html>
+
+
