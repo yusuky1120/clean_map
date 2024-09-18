@@ -68,7 +68,6 @@
         #clean-map-text {
     font-family: 'Verdana', sans-serif;
     font-size: 100px;
-    color: #ffcc00; /* ベースの黄色 */
     text-transform: uppercase; /* 全て大文字 */
     font-weight: bold;
     text-align: center;
@@ -82,10 +81,10 @@
         2px -2px 0 #000000, 
         -2px 2px 0 #000000, 
         4px 4px 10px rgba(0, 0, 0, 0.5); /* 立体感の影 */
-    background: linear-gradient(to bottom, #0056b3 0%, #ffcc00 100%); /* 青から黄色のグラデーション */
+        background: linear-gradient(to bottom, #0056b3 0%, #ffcc00 100%); /* 青から黄色のグラデーション */
     background-clip: text; /* テキストにグラデーション適用 */
     color: transparent; /* 背景グラデーションのみを表示 */
-    border: 5px solid white; /* 白い輪郭 */
+        border: 5px solid white; /* 白い輪郭 */
     padding: 10px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* 光沢感 */
             opacity: 0;
@@ -322,7 +321,7 @@
 
     // ウェルカムメッセージと画像がすぐに表示されるように設定
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('map').style.display = 'none'; // 地図は初期では非表示
+    document.getElementById('map').style.opacity = 0.5; // 地図は初期では非表示
     document.getElementById('welcome-background').style.opacity = 1;
     cleanMapText.style.opacity = 1;  // CLEAN MAP テキストをすぐに表示
     welcomeMessageElement.style.opacity = 1;  // ウェルカムメッセージもすぐに表示
@@ -338,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
         welcomeBackground.style.display = 'none';
         welcomeMessageElement.style.display = 'none';
         taptostartTextElement.style.display = 'none';
-        document.getElementById('map').style.display = 'block';
+        document.getElementById('map').style.opacity = 1;
         document.getElementById('button-container').style.display = 'flex';
         gomiIcon.style.display = 'block'; // マップが表示されたらゴミアイコンを表示
         tabacoIcon.style.display = 'block'; // マップが表示されたら喫煙所アイコンを表示
