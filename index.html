@@ -76,17 +76,15 @@
     left: 50%;
     transform: translate(-50%, -50%);
     text-shadow: 
-        -2px -2px 0 #000000, /* 黒い影 */
+    -2px -2px 0 #000000, /* 黒い影 */
         2px 2px 0 #000000, 
         2px -2px 0 #000000, 
         -2px 2px 0 #000000, 
         4px 4px 10px rgba(0, 0, 0, 0.5); /* 立体感の影 */
-        background: linear-gradient(to bottom, #0056b3 0%, #ffcc00 100%); /* 青から黄色のグラデーション */
     background-clip: text; /* テキストにグラデーション適用 */
     color: transparent; /* 背景グラデーションのみを表示 */
         border: 5px solid white; /* 白い輪郭 */
     padding: 10px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* 光沢感 */
             opacity: 0;
             z-index: 3;
         }
@@ -128,12 +126,12 @@
         #current-location-btn, #edit-info-btn {
             padding: 15px 40px;
             font-size: 24px;
-            background-color: #000000;
+            background-color: rgba(0, 0, 0, 0.6);
             color: #ffffff;
             border: 4px solid #ffffff;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 4px 4px 0 #000000;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.8); /* 全体的に広がる影 */
             font-family: 'DotGothic16', sans-serif;
         }
 
@@ -148,7 +146,7 @@
         }
 
         #current-location-btn:hover, #edit-info-btn:hover {
-            background-color: #000000;
+            background-color: rgba(0, 0, 0);
         }
 
         .modal {
@@ -159,13 +157,13 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
             justify-content: center;
             align-items: center;
+            background-color: rgba(0, 0, 0, 0.6);
         }
 
         .modal-content {
-            background-color: #000000;
+            background-color: rgba(0, 0, 0, 0);
             padding: 20px;
             border: 4px solid #ffffff;
             text-align: center;
@@ -179,12 +177,11 @@
             margin: 10px;
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #000000;
+            background-color: rgba(0, 0, 0, 0.75);
             color: #ffffff;
             border: 4px solid #ffffff;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 4px 4px 0 #000000;
             font-family: 'DotGothic16', sans-serif;
         }
 
