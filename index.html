@@ -125,14 +125,18 @@
         }
 
         #current-location-btn, #edit-info-btn {
-            font-family:'HiraginoSans-W5', sans-serif;
-            padding: 15px 40px;
-            font-size: 25px;
-            background-color: #32cd32;
-            color: rgb(255, 255, 255);
-            border: 4px solid #32cd32;
-            border-radius: 8px;
-            cursor: pointer;
+    font-family: 'HiraginoSans-W5', sans-serif;
+    padding: 15px 40px;
+    font-size: 25px;
+    background-color: #32cd32;
+    color: rgb(255, 255, 255);
+    border: 4px solid #32cd32;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    width: 170px; /* 両方のボタンが同じ大きさになるように固定幅を設定 */
+    text-align: center; /* ボタン内のテキストを中央揃え */
+    box-sizing: border-box; /* paddingやborderを含めて幅を計算 */
         }
 
         #button-container {
@@ -227,9 +231,9 @@
     <!-- ゴミ箱か喫煙所かを選ぶモーダル -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <p>何を登録しますか？</p>
-            <button id="register-bin">ゴミ箱を登録</button>
-            <button id="register-smoking-area">喫煙所を登録</button>
+            <p>スポットの種類</p>
+            <button id="register-bin">ゴミ箱を追加</button>
+            <button id="register-smoking-area">喫煙所を追加</button>
         </div>
     </div>
 
@@ -296,12 +300,12 @@
 
     if (userLang.startsWith('ja')) {
         welcomeText = "TAP to start!";
-        currentLocationText = "現在地を登録する";
-        editInfoText = "情報を変更する";
+        currentLocationText = "スポットの追加";
+        editInfoText = "情報の編集";
     } else {
         welcomeText = "Welcome to the Clean Map!";
-        currentLocationText = "Add current location";
-        editInfoText = "Change information";
+        currentLocationText = "Add the spot";
+        editInfoText = "Edit information";
     }
 
     currentLocationBtn.textContent = currentLocationText;
