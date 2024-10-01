@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 
 // MySQLの接続設定
 const db = mysql.createConnection({
-  host: 'database-1.c7iagmoaoaxo.us-east-2.rds.amazonaws.com',
+  host: '18.118.171.234',
   user: 'yusuky', // MySQLユーザー名
   password: '2001Muro1120!', // MySQLのパスワード
   database: 'mydatabase' // データベース名
