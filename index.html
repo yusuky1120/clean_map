@@ -552,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             map.once('click', function () {
                 map.removeLayer(marker);
-                fetch(`http://18.118.171.234/api/delete-location/${id}`, { method: 'DELETE' })
+                fetch(`https://18.118.171.234/api/delete-location/${id}`, { method: 'DELETE' })
                     .then(response => response.json())
                     .then(() => {
                         alert('ピンが削除されました');
@@ -566,7 +566,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 既存のピンをロードして表示
-    fetch('http://18.118.171.234/api/locations')
+    fetch('https://18.118.171.234/api/locations')
         .then(response => response.json())
         .then(data => {
             data.forEach(location => {
@@ -636,7 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    fetch('http://18.118.171.234/api/locations')
+    fetch('https://18.118.171.234/api/locations')
         .then(response => response.json())
         .then(data => {
             data.forEach(location => {
@@ -667,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
   binType: binType
 };
 
-fetch('http://18.118.171.234/api/add-bin', {
+fetch('https://18.118.171.234/api/add-bin', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
