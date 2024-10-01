@@ -6,10 +6,10 @@ const PORT = process.env.PORT || 3000;
 
 // MySQLの接続設定
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'yusuke', // MySQLユーザー名
-  password: '1120', // MySQLのパスワード
-  database: 'clean_map' // データベース名
+  host: 'database-1.c7iagmoaoaxo.us-east-2.rds.amazonaws.com',
+  user: 'yusuky', // MySQLユーザー名
+  password: '2001Muro1120!', // MySQLのパスワード
+  database: 'mydatabase' // データベース名
 });
 
 // データベース接続確認
