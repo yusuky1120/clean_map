@@ -408,7 +408,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append('type', selectedType);
         formData.append('binType', binType);
 
-        fetch('http://localhost:3000/api/add-bin', {
+        fetch('http://18.118.171.234/api/add-bin', {
             method: 'POST',
             body: formData
         }).then(response => response.json())
@@ -440,7 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append('type', selectedType);
         formData.append('crowd', crowd);
 
-        fetch('http://localhost:3000/api/add-smoking', {
+        fetch('http://18.118.171.234/api/add-smoking', {
             method: 'POST',
             body: formData
         }).then(response => response.json())
@@ -551,7 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             map.once('click', function () {
                 map.removeLayer(marker);
-                fetch(`http://localhost:3000/api/delete-location/${id}`, { method: 'DELETE' })
+                fetch(`http://18.118.171.234/api/delete-location/${id}`, { method: 'DELETE' })
                     .then(response => response.json())
                     .then(() => {
                         alert('ピンが削除されました');
@@ -565,7 +565,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 既存のピンをロードして表示
-    fetch('http://localhost:3000/api/locations')
+    fetch('http://18.118.171.234/api/locations')
         .then(response => response.json())
         .then(data => {
             data.forEach(location => {
@@ -635,7 +635,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    fetch('http://localhost:3000/api/locations')
+    fetch('http://18.118.171.234/api/locations')
         .then(response => response.json())
         .then(data => {
             data.forEach(location => {
@@ -666,7 +666,7 @@ document.addEventListener("DOMContentLoaded", () => {
   binType: binType
 };
 
-fetch('http://localhost:3000/api/add-bin', {
+fetch('http://18.118.171.234/api/add-bin', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
