@@ -10,6 +10,9 @@ const db = mysql.createConnection({
   user: 'yusuky', // MySQLユーザー名
   password: '2001Muro1120!', // MySQLのパスワード
   database: 'mydatabase' // データベース名
+  waitForConnections: true,
+  connectionLimit: 10,  // 最大接続数
+  queueLimit: 0         // 無制限のキュー
 });
 
 // データベース接続確認
