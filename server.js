@@ -21,6 +21,15 @@ db.connect((err) => {
   console.log('MySQLに接続しました');
 });
 
+db.on('error', function(err) {
+    console.log('MySQLエラー:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      handleDisconnect(); // 接続が失われた場合に再接続
+    } else {
+      throw err;
+    }
+  });
+
 // ミドルウェア設定
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
