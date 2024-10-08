@@ -536,9 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 編集ボタンがクリックされたら
         editButton.addEventListener('click', () => {
-            messageElement.textContent = 'ピンを選択してください';
-            messageElement.style.display = 'block';
-
+            
             map.once('click', function () {
                 showModal(type === 'bin' ? 'bin-modal' : 'smoking-modal');
                 messageElement.style.display = 'none';  // メッセージを非表示
@@ -546,23 +544,35 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // 削除ボタンがクリックされたら
-        deleteButton.addEventListener('click', () => {
-            messageElement.textContent = 'ピンを選択してください';
-            messageElement.style.display = 'block';
+   // 削除ボタンがクリックされたときの処理
+   deleteButton.addEventListener('click', () => {
+        // マーカーをマップから削除
+        map.removeLayer(marker);
 
-            map.once('click', function () {
-                map.removeLayer(marker);
-                fetch(`https://api.cleanmap.net/api/delete-location/${id}`, { method: 'DELETE' })
-                    .then(response => response.json())
-                    .then(() => {
-                        alert('ピンが削除されました');
-                    })
-                    .catch(error => {
-                        console.error('削除エラー:', error);
-                    });
-                messageElement.style.display = 'none';  // メッセージを非表示
+        // サーバーに削除リクエストを送信
+        fetch(`https://api.cleanmap.net/api/delete-location/${id}`, { method: 'DELETE' })
+            .then(response => response.json())
+            .then(() => {
+                console.log('ピンが削除されました');
+            })
+            .catch(error => {
+                console.error('削除エラー:', error);
             });
-        });
+    });
+
+
+// モーダルを表示する関数
+function showDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.style.display = 'flex';
+
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    closeModalBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+}
+
+
     }
 
     // 既存のピンをロードして表示
